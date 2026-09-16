@@ -6,44 +6,51 @@ async function sendMessage() {
 
     if (!message) return;
 
-    chat.innerHTML += `
-        <div class="message user">
-            👤 You: ${message}
-        </div>
-    `;
+    // Show user's message
+    const userMessage = document.createElement("div");
+    userMessage.className = "message user";
+    userMessage.textContent = "👤 You: " + message;
+    chat.appendChild(userMessage);
 
     messageInput.value = "";
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/chat", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: message
-            })
-        });
+        const response = await fetch(
+            "https://ai-chat-system-gv4h.onrender.com/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("HTTP Error: " + response.status);
+        }
 
         const data = await response.json();
 
-        chat.innerHTML += `
-            <div class="message ai">
-                🤖 AI: ${data.reply}
-            </div>
-        `;
+        // Show AI reply
+        const aiMessage = document.createElement("div");
+        aiMessage.className = "message ai";
+        aiMessage.textContent = "🤖 AI: " + data.reply;
+        chat.appendChild(aiMessage);
 
         chat.scrollTop = chat.scrollHeight;
 
     } catch (error) {
-        chat.innerHTML += `
-            <div class="message ai">
-                ❌ Error: ${error.message}
-            </div>
-        `;
+        const errorMessage = document.createElement("div");
+        errorMessage.className = "message ai";
+        errorMessage.textContent = "❌ Error: " + error.message;
+        chat.appendChild(errorMessage);
     }
 }
 
+// Press Enter to send
 document.getElementById("message").addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         sendMessage();

@@ -6,7 +6,7 @@ async function sendMessage() {
 
     if (!message) return;
 
-    // Show user's message
+    // User message
     const userMessage = document.createElement("div");
     userMessage.className = "message user";
     userMessage.textContent = "👤 You: " + message;
@@ -28,13 +28,17 @@ async function sendMessage() {
             }
         );
 
-        if (!response.ok) {
-            throw new Error("HTTP Error: " + response.status);
-        }
-
+        // Server ka response pehle read karo
         const data = await response.json();
 
-        // Show AI reply
+        // Actual backend error dikhao
+        if (!response.ok) {
+            throw new Error(
+                data.reply || "HTTP Error: " + response.status
+            );
+        }
+
+        // AI reply
         const aiMessage = document.createElement("div");
         aiMessage.className = "message ai";
         aiMessage.textContent = "🤖 AI: " + data.reply;
@@ -47,10 +51,12 @@ async function sendMessage() {
         errorMessage.className = "message ai";
         errorMessage.textContent = "❌ Error: " + error.message;
         chat.appendChild(errorMessage);
+
+        chat.scrollTop = chat.scrollHeight;
     }
 }
 
-// Press Enter to send
+// Enter press karke message send
 document.getElementById("message").addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         sendMessage();

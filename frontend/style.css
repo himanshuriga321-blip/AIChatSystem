@@ -6,50 +6,62 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #f2f4f8;
+    background: linear-gradient(135deg, #667eea, #764ba2);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 15px;
 }
 
 .chat-container {
-    width: 95%;
-    max-width: 600px;
+    width: 100%;
+    max-width: 650px;
+    height: 90vh;
     background: white;
-    border-radius: 16px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     padding: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 26px;
 }
 
 #chat {
-    height: 400px;
+    flex: 1;
     overflow-y: auto;
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 15px;
     margin-bottom: 15px;
-    background: #fafafa;
+    background: #f7f8fc;
 }
 
 .message {
+    max-width: 85%;
     margin-bottom: 12px;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 12px 15px;
+    border-radius: 14px;
     line-height: 1.5;
+    word-wrap: break-word;
 }
 
 .user {
     background: #e8f0fe;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
 }
 
 .ai {
     background: #e9f7ef;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
 }
 
 .input-area {
@@ -59,16 +71,48 @@ h1 {
 
 #message {
     flex: 1;
-    padding: 12px;
+    padding: 13px 15px;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 16px;
+    outline: none;
+}
+
+#message:focus {
+    border-color: #667eea;
 }
 
 button {
-    padding: 12px 18px;
+    padding: 13px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
+    background: #667eea;
+    color: white;
     cursor: pointer;
     font-size: 16px;
+    font-weight: bold;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 0;
+    }
+
+    .chat-container {
+        height: 100vh;
+        border-radius: 0;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .message {
+        max-width: 90%;
+    }
 }

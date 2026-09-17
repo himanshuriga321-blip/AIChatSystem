@@ -61,7 +61,7 @@ def chat():
                 "reply": "Hugging Face error: " + str(result)
             }), response.status_code
 
-        reply = result["choices"][0]["message"]["content"]
+        reply = result["choices"][0]["message"].get("content", "") or result["choices"][0]["message"].get("reasoning", "No response")
 
         return jsonify({"reply": reply})
 

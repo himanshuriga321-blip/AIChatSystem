@@ -56,7 +56,7 @@ def chat():
 
         result = response.json()
 
-        if response.status_code != 200:
+        if response.status_code != 200 or "choices" not in result:
             return jsonify({
                 "reply": "Hugging Face error: " + str(result)
             }), response.status_code

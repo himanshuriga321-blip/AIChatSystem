@@ -1,13 +1,18 @@
+// 🧠 Conversation Memory
+let conversationHistory = [];
+
+
 async function sendMessage() {
     const messageInput = document.getElementById("message");
     const chat = document.getElementById("chat");
-    const button = document.querySelector("button");
+    const button = document.getElementById("sendButton");
 
     const message = messageInput.value.trim();
 
     if (!message) return;
 
-    // User message
+
+    // 👤 User message
     const userMessage = document.createElement("div");
     userMessage.className = "message user";
     userMessage.textContent = "👤 You: " + message;
@@ -15,33 +20,48 @@ async function sendMessage() {
 
     messageInput.value = "";
 
-    // AI thinking message
+
+    // 🧠 Save user message to memory
+    conversationHistory.push({
+        role: "user",
+        content: message
+    });
+
+
+    // 🤖 AI thinking message
     const thinkingMessage = document.createElement("div");
     thinkingMessage.className = "message ai";
     thinkingMessage.textContent = "🤖 AI सोच रहा है...";
     chat.appendChild(thinkingMessage);
 
-    // Disable input while AI is responding
+
+    // Disable input
     messageInput.disabled = true;
     button.disabled = true;
 
     chat.scrollTop = chat.scrollHeight;
+
 
     try {
         const response = await fetch(
             "https://ai-chat-system-gv4h.onrender.com/chat",
             {
                 method: "POST",
+
                 headers: {
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
-                    message: message
+                    message: message,
+                    messages: conversationHistory
                 })
             }
         );
 
+
         const data = await response.json();
+
 
         if (!response.ok) {
             throw new Error(
@@ -49,31 +69,61 @@ async function sendMessage() {
             );
         }
 
-        // Replace thinking message with AI reply
-        thinkingMessage.textContent = "🤖 AI: " + data.reply;
+
+        // 🤖 Show AI reply
+        thinkingMessage.textContent =
+            "🤖 AI: " + data.reply;
+
+
+        // 🧠 Save AI reply to memory
+        conversationHistory.push({
+            role: "assistant",
+            content: data.reply
+        });
+
 
     } catch (error) {
-        // Show error
+
         thinkingMessage.textContent =
             "❌ Error: " + error.message;
+
+        // Remove user message from memory if request failed
+        conversationHistory.pop();
     }
+
 
     // Enable input again
     messageInput.disabled = false;
     button.disabled = false;
+
     messageInput.focus();
 
     chat.scrollTop = chat.scrollHeight;
 }
 
 
-// Enter press karke message send
-document.getElementById("message").addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        sendMessage();
+// ⌨️ Enter key से message भेजना
+document.getElementById("message").addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+
     }
-});
-// Clear Chat button
-document.getElementById("clearChat").addEventListener("click", function() {
-    document.getElementById("chat").innerHTML = "";
-});
+);
+
+
+// 🗑️ Clear Chat
+document.getElementById("clearChat").addEventListener(
+    "click",
+    function() {
+
+        document.getElementById("chat").innerHTML = "";
+
+        // 🧠 Memory भी clear
+        conversationHistory = [];
+
+    }
+);

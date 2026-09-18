@@ -1,6 +1,7 @@
 async function sendMessage() {
     const messageInput = document.getElementById("message");
     const chat = document.getElementById("chat");
+    const button = document.querySelector("button");
 
     const message = messageInput.value.trim();
 
@@ -13,6 +14,18 @@ async function sendMessage() {
     chat.appendChild(userMessage);
 
     messageInput.value = "";
+
+    // AI thinking message
+    const thinkingMessage = document.createElement("div");
+    thinkingMessage.className = "message ai";
+    thinkingMessage.textContent = "🤖 AI सोच रहा है...";
+    chat.appendChild(thinkingMessage);
+
+    // Disable input while AI is responding
+    messageInput.disabled = true;
+    button.disabled = true;
+
+    chat.scrollTop = chat.scrollHeight;
 
     try {
         const response = await fetch(
@@ -28,33 +41,31 @@ async function sendMessage() {
             }
         );
 
-        // Server ka response pehle read karo
         const data = await response.json();
 
-        // Actual backend error dikhao
         if (!response.ok) {
             throw new Error(
                 data.reply || "HTTP Error: " + response.status
             );
         }
 
-        // AI reply
-        const aiMessage = document.createElement("div");
-        aiMessage.className = "message ai";
-        aiMessage.textContent = "🤖 AI: " + data.reply;
-        chat.appendChild(aiMessage);
-
-        chat.scrollTop = chat.scrollHeight;
+        // Replace thinking message with AI reply
+        thinkingMessage.textContent = "🤖 AI: " + data.reply;
 
     } catch (error) {
-        const errorMessage = document.createElement("div");
-        errorMessage.className = "message ai";
-        errorMessage.textContent = "❌ Error: " + error.message;
-        chat.appendChild(errorMessage);
-
-        chat.scrollTop = chat.scrollHeight;
+        // Show error
+        thinkingMessage.textContent =
+            "❌ Error: " + error.message;
     }
+
+    // Enable input again
+    messageInput.disabled = false;
+    button.disabled = false;
+    messageInput.focus();
+
+    chat.scrollTop = chat.scrollHeight;
 }
+
 
 // Enter press karke message send
 document.getElementById("message").addEventListener("keydown", function(event) {

@@ -73,3 +73,7 @@ document.getElementById("message").addEventListener("keydown", function(event) {
         sendMessage();
     }
 });
+// Clear Chat button
+document.getElementById("clearChat").addEventListener("click", function() {
+    document.getElementById("chat").innerHTML = "";
+});

@@ -13,18 +13,29 @@
 
     <div class="chat-container">
 
-        <h1>🤖 AI Chat System</h1>
+        <div class="header">
+            <h1>🤖 AI Chat System</h1>
+
+            <button id="clearChat" class="clear-btn">
+                🗑️ Clear Chat
+            </button>
+        </div>
 
         <div id="chat"></div>
 
         <div class="input-area">
+
             <input
                 type="text"
                 id="message"
                 placeholder="Type your message..."
+                autocomplete="off"
             >
 
-            <button onclick="sendMessage()">Send</button>
+            <button id="sendButton" onclick="sendMessage()">
+                Send
+            </button>
+
         </div>
 
     </div>

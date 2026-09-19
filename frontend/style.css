@@ -45,7 +45,9 @@ h1 {
     display: flex;
     gap: 8px;
 }
-
+.new-chat-btn {
+    background: #3498db;
+}
 .history-btn,
 .clear-btn {
     padding: 10px 12px;

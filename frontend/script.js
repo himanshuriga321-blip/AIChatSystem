@@ -3,7 +3,16 @@ let conversationHistory =
     JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
 
-// 💬 Send Message
+// 💾 Save conversation
+function saveConversation() {
+    localStorage.setItem(
+        "conversationHistory",
+        JSON.stringify(conversationHistory)
+    );
+}
+
+
+// 🤖 Send Message
 async function sendMessage() {
 
     const messageInput = document.getElementById("message");
@@ -25,22 +34,20 @@ async function sendMessage() {
 
     chat.appendChild(userMessage);
 
+
     messageInput.value = "";
 
 
-    // 🧠 Save user message to memory
+    // 🧠 Save user message
     conversationHistory.push({
         role: "user",
         content: message
     });
 
-    localStorage.setItem(
-        "conversationHistory",
-        JSON.stringify(conversationHistory)
-    );
+    saveConversation();
 
 
-    // 🤖 AI thinking message
+    // 🤖 Thinking
     const thinkingMessage = document.createElement("div");
 
     thinkingMessage.className = "message ai";
@@ -95,17 +102,13 @@ async function sendMessage() {
             "🤖 AI: " + data.reply;
 
 
-        // 🧠 Save AI reply to memory
+        // 🧠 Save AI reply
         conversationHistory.push({
             role: "assistant",
             content: data.reply
         });
 
-
-        localStorage.setItem(
-            "conversationHistory",
-            JSON.stringify(conversationHistory)
-        );
+        saveConversation();
 
 
     } catch (error) {
@@ -117,16 +120,12 @@ async function sendMessage() {
         // 🧠 Remove failed user message
         conversationHistory.pop();
 
-
-        localStorage.setItem(
-            "conversationHistory",
-            JSON.stringify(conversationHistory)
-        );
+        saveConversation();
 
     }
 
 
-    // ✅ Enable input again
+    // ✅ Enable input
     messageInput.disabled = false;
     button.disabled = false;
 
@@ -137,15 +136,13 @@ async function sendMessage() {
 }
 
 
-// ⌨️ Enter key से message भेजना
+// ⌨️ Enter key
 document.getElementById("message").addEventListener(
     "keydown",
     function(event) {
 
         if (event.key === "Enter") {
-
             sendMessage();
-
         }
 
     }
@@ -159,16 +156,157 @@ document.getElementById("clearChat").addEventListener(
 
         document.getElementById("chat").innerHTML = "";
 
-        // 🧠 Memory clear
         conversationHistory = [];
 
-        localStorage.removeItem("conversationHistory");
+        localStorage.removeItem(
+            "conversationHistory"
+        );
+
+        showHistory();
 
     }
 );
 
 
-// 💾 Load saved chat history when page opens
+// 📜 Open History
+document.getElementById("historyButton").addEventListener(
+    "click",
+    function() {
+
+        showHistory();
+
+        document.getElementById(
+            "historyPanel"
+        ).style.display = "block";
+
+    }
+);
+
+
+// ❌ Close History
+document.getElementById("closeHistory").addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "historyPanel"
+        ).style.display = "none";
+
+    }
+);
+
+
+// 📜 Show History
+function showHistory() {
+
+    const historyList =
+        document.getElementById("historyList");
+
+    historyList.innerHTML = "";
+
+
+    if (conversationHistory.length === 0) {
+
+        const emptyMessage =
+            document.createElement("div");
+
+        emptyMessage.className =
+            "history-item";
+
+        emptyMessage.textContent =
+            "📭 No chat history yet.";
+
+        historyList.appendChild(
+            emptyMessage
+        );
+
+        return;
+    }
+
+
+    conversationHistory.forEach(
+        function(item, index) {
+
+            const historyItem =
+                document.createElement("div");
+
+            historyItem.className =
+                "history-item";
+
+
+            const title =
+                document.createElement("div");
+
+            title.className =
+                "history-item-title";
+
+
+            if (item.role === "user") {
+
+                title.textContent =
+                    "👤 You";
+
+            } else {
+
+                title.textContent =
+                    "🤖 AI";
+
+            }
+
+
+            const preview =
+                document.createElement("div");
+
+            preview.className =
+                "history-item-preview";
+
+            preview.textContent =
+                item.content;
+
+
+            historyItem.appendChild(title);
+
+            historyItem.appendChild(preview);
+
+
+            // 👆 Click history item
+            historyItem.addEventListener(
+                "click",
+                function() {
+
+                    const messages =
+                        document.querySelectorAll(
+                            "#chat .message"
+                        );
+
+                    if (messages[index]) {
+
+                        messages[index].scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+
+                    }
+
+                    document.getElementById(
+                        "historyPanel"
+                    ).style.display = "none";
+
+                }
+            );
+
+
+            historyList.appendChild(
+                historyItem
+            );
+
+        }
+    );
+
+}
+
+
+// 💾 Load saved chat when page opens
 window.addEventListener(
     "load",
     function() {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,16 +14,49 @@
 
     <div class="chat-container">
 
+        <!-- Header -->
         <div class="header">
+
             <h1>🤖 AI Chat System</h1>
 
-            <button id="clearChat" class="clear-btn">
-                🗑️ Clear Chat
-            </button>
+            <div class="header-buttons">
+
+                <button id="historyButton" class="history-btn">
+                    📜 History
+                </button>
+
+                <button id="clearChat" class="clear-btn">
+                    🗑️ Clear Chat
+                </button>
+
+            </div>
+
         </div>
 
+
+        <!-- Chat History Panel -->
+        <div id="historyPanel" class="history-panel">
+
+            <div class="history-header">
+
+                <h2>📜 Chat History</h2>
+
+                <button id="closeHistory">
+                    ✖️
+                </button>
+
+            </div>
+
+            <div id="historyList"></div>
+
+        </div>
+
+
+        <!-- Chat Area -->
         <div id="chat"></div>
 
+
+        <!-- Input Area -->
         <div class="input-area">
 
             <input
@@ -32,7 +66,10 @@
                 autocomplete="off"
             >
 
-            <button id="sendButton" onclick="sendMessage()">
+            <button
+                id="sendButton"
+                onclick="sendMessage()"
+            >
                 Send
             </button>
 
@@ -40,7 +77,9 @@
 
     </div>
 
+
     <script src="script.js"></script>
 
 </body>
+
 </html>

@@ -24,13 +24,40 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 15px;
     color: #333;
     font-size: 26px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.history-btn,
+.clear-btn {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.history-btn {
+    background: #667eea;
+}
+
+.clear-btn {
+    background: #e74c3c;
 }
 
 #chat {
@@ -97,7 +124,76 @@ button:hover {
     opacity: 0.9;
 }
 
+
+/* 📜 Chat History Panel */
+
+.history-panel {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    padding: 15px;
+    z-index: 10;
+    overflow-y: auto;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.history-header h2 {
+    color: #333;
+    font-size: 20px;
+}
+
+#closeHistory {
+    padding: 8px 12px;
+    background: #e74c3c;
+    font-size: 14px;
+}
+
+#historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    padding: 12px;
+    background: #f7f8fc;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.history-item:hover {
+    background: #eef1ff;
+}
+
+.history-item-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.history-item-preview {
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* 📱 Mobile */
+
 @media (max-width: 600px) {
+
     body {
         padding: 0;
     }
@@ -108,11 +204,32 @@ button:hover {
         padding: 15px;
     }
 
+    .header {
+        align-items: flex-start;
+    }
+
     h1 {
-        font-size: 22px;
+        font-size: 20px;
+    }
+
+    .header-buttons {
+        flex-direction: column;
+    }
+
+    .history-btn,
+    .clear-btn {
+        padding: 8px 10px;
+        font-size: 12px;
     }
 
     .message {
         max-width: 90%;
+    }
+
+    .history-panel {
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
     }
 }

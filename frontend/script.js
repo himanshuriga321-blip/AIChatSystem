@@ -362,3 +362,43 @@ window.addEventListener(
 
     }
 );
+
+
+// 📥 Export Chat
+document.getElementById("exportChat").addEventListener("click", function() {
+
+    if (conversationHistory.length === 0) {
+        alert("📭 No chat history to export.");
+        return;
+    }
+
+    let text = "🤖 AI Chat System - Chat History\n\n";
+
+    conversationHistory.forEach(function(item) {
+
+        if (item.role === "user") {
+            text += "👤 You: " + item.content + "\n\n";
+        }
+
+        if (item.role === "assistant") {
+            text += "🤖 AI: " + item.content + "\n\n";
+        }
+
+    });
+
+   const blob = new Blob(["\uFEFF" + text], {
+        type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "AI-Chat-History.txt";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+});

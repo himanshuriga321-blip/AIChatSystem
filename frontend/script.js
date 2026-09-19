@@ -1,8 +1,11 @@
 // 🧠 Conversation Memory
-let conversationHistory = [];
+let conversationHistory =
+    JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
 
+// 💬 Send Message
 async function sendMessage() {
+
     const messageInput = document.getElementById("message");
     const chat = document.getElementById("chat");
     const button = document.getElementById("sendButton");
@@ -14,8 +17,12 @@ async function sendMessage() {
 
     // 👤 User message
     const userMessage = document.createElement("div");
+
     userMessage.className = "message user";
-    userMessage.textContent = "👤 You: " + message;
+
+    userMessage.textContent =
+        "👤 You: " + message;
+
     chat.appendChild(userMessage);
 
     messageInput.value = "";
@@ -27,15 +34,24 @@ async function sendMessage() {
         content: message
     });
 
+    localStorage.setItem(
+        "conversationHistory",
+        JSON.stringify(conversationHistory)
+    );
+
 
     // 🤖 AI thinking message
     const thinkingMessage = document.createElement("div");
+
     thinkingMessage.className = "message ai";
-    thinkingMessage.textContent = "🤖 AI सोच रहा है...";
+
+    thinkingMessage.textContent =
+        "🤖 AI सोच रहा है...";
+
     chat.appendChild(thinkingMessage);
 
 
-    // Disable input
+    // 🚫 Disable input
     messageInput.disabled = true;
     button.disabled = true;
 
@@ -43,6 +59,7 @@ async function sendMessage() {
 
 
     try {
+
         const response = await fetch(
             "https://ai-chat-system-gv4h.onrender.com/chat",
             {
@@ -64,9 +81,12 @@ async function sendMessage() {
 
 
         if (!response.ok) {
+
             throw new Error(
-                data.reply || "HTTP Error: " + response.status
+                data.reply ||
+                "HTTP Error: " + response.status
             );
+
         }
 
 
@@ -82,23 +102,38 @@ async function sendMessage() {
         });
 
 
+        localStorage.setItem(
+            "conversationHistory",
+            JSON.stringify(conversationHistory)
+        );
+
+
     } catch (error) {
 
         thinkingMessage.textContent =
             "❌ Error: " + error.message;
 
-        // Remove user message from memory if request failed
+
+        // 🧠 Remove failed user message
         conversationHistory.pop();
+
+
+        localStorage.setItem(
+            "conversationHistory",
+            JSON.stringify(conversationHistory)
+        );
+
     }
 
 
-    // Enable input again
+    // ✅ Enable input again
     messageInput.disabled = false;
     button.disabled = false;
 
     messageInput.focus();
 
     chat.scrollTop = chat.scrollHeight;
+
 }
 
 
@@ -108,7 +143,9 @@ document.getElementById("message").addEventListener(
     function(event) {
 
         if (event.key === "Enter") {
+
             sendMessage();
+
         }
 
     }
@@ -122,8 +159,68 @@ document.getElementById("clearChat").addEventListener(
 
         document.getElementById("chat").innerHTML = "";
 
-        // 🧠 Memory भी clear
+        // 🧠 Memory clear
         conversationHistory = [];
+
+        localStorage.removeItem("conversationHistory");
+
+    }
+);
+
+
+// 💾 Load saved chat history when page opens
+window.addEventListener(
+    "load",
+    function() {
+
+        const chat =
+            document.getElementById("chat");
+
+
+        conversationHistory.forEach(
+            function(item) {
+
+                const message =
+                    document.createElement("div");
+
+
+                if (item.role === "user") {
+
+                    message.className =
+                        "message user";
+
+                    message.textContent =
+                        "👤 You: " + item.content;
+
+                }
+
+
+                if (item.role === "assistant") {
+
+                    message.className =
+                        "message ai";
+
+                    message.textContent =
+                        "🤖 AI: " + item.content;
+
+                }
+
+
+                if (
+                    item.role === "user" ||
+                    item.role === "assistant"
+                ) {
+
+                    chat.appendChild(message);
+
+                }
+
+            }
+        );
+
+
+        chat.scrollTop =
+            chat.scrollHeight;
 
     }
 );

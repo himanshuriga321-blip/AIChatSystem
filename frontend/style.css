@@ -65,7 +65,9 @@ h1 {
 .export-btn {
     background: #27ae60;
 }
-
+.rename-chat-btn {
+    background: #f39c12;
+}
 #chat {
     flex: 1;
     overflow-y: auto;

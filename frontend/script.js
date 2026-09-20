@@ -1,5 +1,6 @@
-// 🧠 AI Chat System - Feature 4
-// New Chat + Chat Sessions + History + Export
+// 🧠 AI Chat System - Feature 5
+// New Chat + Chat Sessions + Rename + History + Export
+
 
 const BACKEND_URL =
     "https://ai-chat-system-gv4h.onrender.com/chat";
@@ -16,7 +17,10 @@ let currentChatId =
     localStorage.getItem("currentChatId");
 
 
-// पुराने Feature 2 data को नए session में migrate करना
+// ==========================================
+// 🔄 Old Chat Migration
+// ==========================================
+
 if (chatSessions.length === 0) {
 
     const oldConversation =
@@ -24,33 +28,52 @@ if (chatSessions.length === 0) {
             localStorage.getItem("conversationHistory")
         ) || [];
 
+
     if (oldConversation.length > 0) {
 
         chatSessions.push({
+
             id: Date.now().toString(),
-            title: getChatTitle(oldConversation),
-            messages: oldConversation,
-            createdAt: new Date().toISOString()
+
+            title:
+                getChatTitle(oldConversation),
+
+            messages:
+                oldConversation,
+
+            createdAt:
+                new Date().toISOString()
+
         });
 
     }
 
-    localStorage.removeItem("conversationHistory");
+
+    localStorage.removeItem(
+        "conversationHistory"
+    );
+
 }
 
 
-// अगर कोई current chat नहीं है
-if (!currentChatId && chatSessions.length > 0) {
+// ==========================================
+// 🆕 Current Chat Check
+// ==========================================
+
+if (
+    !currentChatId ||
+    !chatSessions.some(
+        function(chat) {
+            return chat.id === currentChatId;
+        }
+    )
+) {
 
     currentChatId =
-        chatSessions[chatSessions.length - 1].id;
+        chatSessions.length > 0
+            ? chatSessions[chatSessions.length - 1].id
+            : null;
 
-}
-
-
-// अगर कोई chat ही नहीं है तो नया chat बनाओ
-if (!currentChatId) {
-    createNewChat(false);
 }
 
 
@@ -65,22 +88,26 @@ function saveSessions() {
         JSON.stringify(chatSessions)
     );
 
+
     localStorage.setItem(
         "currentChatId",
         currentChatId
     );
+
 }
 
 
 // ==========================================
-// 🔎 Current Chat
+// 🔎 Get Current Chat
 // ==========================================
 
 function getCurrentChat() {
 
     return chatSessions.find(
         function(chat) {
+
             return chat.id === currentChatId;
+
         }
     );
 
@@ -88,7 +115,7 @@ function getCurrentChat() {
 
 
 // ==========================================
-// 📝 Chat Title
+// 📝 Get Chat Title
 // ==========================================
 
 function getChatTitle(messages) {
@@ -96,51 +123,72 @@ function getChatTitle(messages) {
     const firstUserMessage =
         messages.find(
             function(item) {
+
                 return item.role === "user";
+
             }
         );
 
+
     if (!firstUserMessage) {
+
         return "New Chat";
+
     }
+
 
     let title =
         firstUserMessage.content.trim();
 
+
     if (title.length > 30) {
-        title = title.substring(0, 30) + "...";
+
+        title =
+            title.substring(0, 30) + "...";
+
     }
 
+
     return title;
+
 }
 
 
 // ==========================================
-// ➕ New Chat
+// ➕ Create New Chat
 // ==========================================
 
 function createNewChat(showMessage = true) {
 
     const newChat = {
 
-        id: Date.now().toString(),
+        id:
+            Date.now().toString(),
 
-        title: "New Chat",
+        title:
+            "New Chat",
 
-        messages: [],
+        messages:
+            [],
 
-        createdAt: new Date().toISOString()
+        createdAt:
+            new Date().toISOString()
 
     };
 
 
     chatSessions.push(newChat);
 
-    currentChatId = newChat.id;
+    currentChatId =
+        newChat.id;
+
 
     saveSessions();
 
-    document.getElementById("chat").innerHTML = "";
+
+    document.getElementById(
+        "chat"
+    ).innerHTML = "";
 
 
     if (showMessage) {
@@ -148,11 +196,14 @@ function createNewChat(showMessage = true) {
         const message =
             document.createElement("div");
 
+
         message.className =
             "message ai";
 
+
         message.textContent =
             "🤖 New chat started!";
+
 
         document
             .getElementById("chat")
@@ -172,8 +223,10 @@ async function sendMessage() {
     const messageInput =
         document.getElementById("message");
 
+
     const chat =
         document.getElementById("chat");
+
 
     const button =
         document.getElementById("sendButton");
@@ -184,28 +237,39 @@ async function sendMessage() {
 
 
     if (!message) {
+
         return;
+
     }
 
 
-    const currentChat =
+    let currentChat =
         getCurrentChat();
 
 
     if (!currentChat) {
-        return;
+
+        createNewChat(false);
+
+        currentChat =
+            getCurrentChat();
+
     }
 
 
-    // 👤 User message
+    // 👤 User Message
+
     const userMessage =
         document.createElement("div");
+
 
     userMessage.className =
         "message user";
 
+
     userMessage.textContent =
         "👤 You: " + message;
+
 
     chat.appendChild(userMessage);
 
@@ -213,41 +277,63 @@ async function sendMessage() {
     messageInput.value = "";
 
 
-    // 🧠 Save user message
+    // 🧠 Save User Message
+
     currentChat.messages.push({
 
-        role: "user",
+        role:
+            "user",
 
-        content: message
+        content:
+            message
 
     });
 
 
-    // 📝 Update title
-    currentChat.title =
-        getChatTitle(currentChat.messages);
+    // 📝 Automatic title
+
+    if (
+        currentChat.title === "New Chat"
+    ) {
+
+        currentChat.title =
+            getChatTitle(
+                currentChat.messages
+            );
+
+    }
 
 
     saveSessions();
 
 
     // 🤖 Thinking
+
     const thinkingMessage =
         document.createElement("div");
+
 
     thinkingMessage.className =
         "message ai";
 
+
     thinkingMessage.textContent =
         "🤖 AI सोच रहा है...";
 
-    chat.appendChild(thinkingMessage);
+
+    chat.appendChild(
+        thinkingMessage
+    );
 
 
-    // 🚫 Disable input
-    messageInput.disabled = true;
+    // 🚫 Disable Input
 
-    button.disabled = true;
+    messageInput.disabled =
+        true;
+
+
+    button.disabled =
+        true;
 
 
     chat.scrollTop =
@@ -260,21 +346,27 @@ async function sendMessage() {
             await fetch(
                 BACKEND_URL,
                 {
-                    method: "POST",
+
+                    method:
+                        "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        message: message,
+                            message:
+                                message,
 
-                        messages:
-                            currentChat.messages
+                            messages:
+                                currentChat.messages
 
-                    })
+                        })
 
                 }
             );
@@ -295,17 +387,22 @@ async function sendMessage() {
         }
 
 
-        // 🤖 Show AI reply
+        // 🤖 AI Reply
+
         thinkingMessage.textContent =
-            "🤖 AI: " + data.reply;
+            "🤖 AI: " +
+            data.reply;
 
 
-        // 🧠 Save AI reply
+        // 🧠 Save AI Reply
+
         currentChat.messages.push({
 
-            role: "assistant",
+            role:
+                "assistant",
 
-            content: data.reply
+            content:
+                data.reply
 
         });
 
@@ -320,20 +417,28 @@ async function sendMessage() {
             error.message;
 
 
-        // Failed user message हटाओ
+        // Remove failed user message
+
         currentChat.messages.pop();
+
 
         saveSessions();
 
     }
 
 
-    // ✅ Enable input
-    messageInput.disabled = false;
+    // ✅ Enable Input
 
-    button.disabled = false;
+    messageInput.disabled =
+        false;
+
+
+    button.disabled =
+        false;
+
 
     messageInput.focus();
+
 
     chat.scrollTop =
         chat.scrollHeight;
@@ -352,7 +457,9 @@ document
         function(event) {
 
             if (event.key === "Enter") {
+
                 sendMessage();
+
             }
 
         }
@@ -376,6 +483,57 @@ document
 
 
 // ==========================================
+// ✏️ Rename Current Chat
+// ==========================================
+
+document
+    .getElementById("renameChatButton")
+    .addEventListener(
+        "click",
+        function() {
+
+            const currentChat =
+                getCurrentChat();
+
+
+            if (!currentChat) {
+
+                return;
+
+            }
+
+
+            const newName =
+                prompt(
+                    "✏️ Enter new chat name:",
+                    currentChat.title
+                );
+
+
+            if (
+                newName === null ||
+                newName.trim() === ""
+            ) {
+
+                return;
+
+            }
+
+
+            currentChat.title =
+                newName.trim();
+
+
+            saveSessions();
+
+
+            showHistory();
+
+        }
+    );
+
+
+// ==========================================
 // 🗑️ Clear Current Chat
 // ==========================================
 
@@ -390,11 +548,15 @@ document
 
 
             if (!currentChat) {
+
                 return;
+
             }
 
 
-            currentChat.messages = [];
+            currentChat.messages =
+                [];
+
 
             currentChat.title =
                 "New Chat";
@@ -426,9 +588,13 @@ document
 
             showHistory();
 
+
             document
-                .getElementById("historyPanel")
-                .style.display = "block";
+                .getElementById(
+                    "historyPanel"
+                )
+                .style.display =
+                "block";
 
         }
     );
@@ -445,21 +611,26 @@ document
         function() {
 
             document
-                .getElementById("historyPanel")
-                .style.display = "none";
+                .getElementById(
+                    "historyPanel"
+                )
+                .style.display =
+                "none";
 
         }
     );
 
 
 // ==========================================
-// 📜 Show Chat History
+// 📜 Show History
 // ==========================================
 
 function showHistory() {
 
     const historyList =
-        document.getElementById("historyList");
+        document.getElementById(
+            "historyList"
+        );
 
 
     historyList.innerHTML = "";
@@ -470,22 +641,25 @@ function showHistory() {
         const emptyMessage =
             document.createElement("div");
 
+
         emptyMessage.className =
             "history-item";
+
 
         emptyMessage.textContent =
             "📭 No chat history yet.";
 
+
         historyList.appendChild(
             emptyMessage
         );
+
 
         return;
 
     }
 
 
-    // Latest chat first
     const sessions =
         [...chatSessions].reverse();
 
@@ -496,6 +670,7 @@ function showHistory() {
             const historyItem =
                 document.createElement("div");
 
+
             historyItem.className =
                 "history-item";
 
@@ -503,21 +678,27 @@ function showHistory() {
             const title =
                 document.createElement("div");
 
+
             title.className =
                 "history-item-title";
 
+
             title.textContent =
-                "💬 " + session.title;
+                "💬 " +
+                session.title;
 
 
             const preview =
                 document.createElement("div");
 
+
             preview.className =
                 "history-item-preview";
 
 
-            if (session.messages.length > 0) {
+            if (
+                session.messages.length > 0
+            ) {
 
                 preview.textContent =
                     session.messages.length +
@@ -531,12 +712,18 @@ function showHistory() {
             }
 
 
-            historyItem.appendChild(title);
+            historyItem.appendChild(
+                title
+            );
 
-            historyItem.appendChild(preview);
+
+            historyItem.appendChild(
+                preview
+            );
 
 
-            // 👆 Open chat
+            // 👆 Open Chat
+
             historyItem.addEventListener(
                 "click",
                 function() {
@@ -544,7 +731,9 @@ function showHistory() {
                     currentChatId =
                         session.id;
 
+
                     saveSessions();
+
 
                     loadCurrentChat();
 
@@ -577,7 +766,9 @@ function showHistory() {
 function loadCurrentChat() {
 
     const chat =
-        document.getElementById("chat");
+        document.getElementById(
+            "chat"
+        );
 
 
     chat.innerHTML = "";
@@ -588,7 +779,9 @@ function loadCurrentChat() {
 
 
     if (!currentChat) {
+
         return;
+
     }
 
 
@@ -596,13 +789,18 @@ function loadCurrentChat() {
         function(item) {
 
             const message =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
-            if (item.role === "user") {
+            if (
+                item.role === "user"
+            ) {
 
                 message.className =
                     "message user";
+
 
                 message.textContent =
                     "👤 You: " +
@@ -611,10 +809,13 @@ function loadCurrentChat() {
             }
 
 
-            if (item.role === "assistant") {
+            if (
+                item.role === "assistant"
+            ) {
 
                 message.className =
                     "message ai";
+
 
                 message.textContent =
                     "🤖 AI: " +
@@ -628,7 +829,9 @@ function loadCurrentChat() {
                 item.role === "assistant"
             ) {
 
-                chat.appendChild(message);
+                chat.appendChild(
+                    message
+                );
 
             }
 
@@ -665,6 +868,7 @@ document
                     "📭 No chat history to export."
                 );
 
+
                 return;
 
             }
@@ -683,7 +887,9 @@ document
             currentChat.messages.forEach(
                 function(item) {
 
-                    if (item.role === "user") {
+                    if (
+                        item.role === "user"
+                    ) {
 
                         text +=
                             "👤 You: " +
@@ -693,7 +899,9 @@ document
                     }
 
 
-                    if (item.role === "assistant") {
+                    if (
+                        item.role === "assistant"
+                    ) {
 
                         text +=
                             "🤖 AI: " +
@@ -708,23 +916,34 @@ document
 
             const blob =
                 new Blob(
-                    ["\uFEFF" + text],
+                    [
+                        "\uFEFF" +
+                        text
+                    ],
                     {
+
                         type:
                             "text/plain;charset=utf-8"
+
                     }
                 );
 
 
             const url =
-                URL.createObjectURL(blob);
+                URL.createObjectURL(
+                    blob
+                );
 
 
             const a =
-                document.createElement("a");
+                document.createElement(
+                    "a"
+                );
 
 
-            a.href = url;
+            a.href =
+                url;
+
 
             a.download =
                 "AI-Chat-History.txt";
@@ -733,33 +952,36 @@ document
             a.click();
 
 
-            URL.revokeObjectURL(url);
+            URL.revokeObjectURL(
+                url
+            );
 
         }
     );
 
 
 // ==========================================
-// 🚀 Load Chat On Page Open
+// 🚀 Page Load
 // ==========================================
 
 window.addEventListener(
     "load",
     function() {
 
+        if (
+            chatSessions.length === 0
+        ) {
+
+            createNewChat(false);
+
+        } else {
+
+            saveSessions();
+
+        }
+
+
         loadCurrentChat();
 
     }
 );
-
-
-
-
-
-
-
-
-
-
-
-

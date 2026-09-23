@@ -1820,6 +1820,40 @@ function exportCurrentChat() {
     text +=
         "💬 Chat: " +
         currentChat.title +
+        "\n";
+
+    text +=
+        "📅 Created: " +
+        new Date(
+            currentChat.createdAt
+        ).toLocaleString() +
+        "\n";
+
+    if (currentChat.documentId) {
+
+        const attachedDocument =
+            savedDocuments.find(
+                function(savedDocument) {
+                    return (
+                        savedDocument.id ===
+                        currentChat.documentId
+                    );
+                }
+            );
+
+        if (attachedDocument) {
+            text +=
+                "📎 Document: " +
+                attachedDocument.name +
+                "\n";
+        }
+    }
+
+    text += "\n";
+
+    text +=
+        "💬 Messages: " +
+        currentChat.messages.length +
         "\n\n";
 
 

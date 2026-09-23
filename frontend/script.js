@@ -131,6 +131,13 @@ if (
             : null;
 }
 
+const startupChat = getCurrentChat();
+
+currentDocumentId =
+    startupChat
+        ? (startupChat.documentId || null)
+        : null;
+
 
 /* =========================================================
    SAVE

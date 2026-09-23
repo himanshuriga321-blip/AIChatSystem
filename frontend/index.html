@@ -1,87 +1,483 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta name="theme-color" content="#ffffff">
 
     <title>AI Chat System 🤖</title>
 
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
 <body>
 
-    <div class="chat-container">
+<div class="app">
 
-        <!-- Header -->
-        <div class="header">
+    <!-- ================= SIDEBAR ================= -->
 
-            <h1>🤖 AI Chat System</h1>
+    <aside id="sidebar" class="sidebar">
 
-            <div class="header-buttons">
+        <div class="sidebar-top">
+            <div class="brand">
+                <span class="brand-icon">✨</span>
 
-                <button id="newChatButton" class="new-chat-btn">
-                    ➕ New Chat
-                </button>
+                <div>
+                    <strong>AI Chat System</strong>
+                    <small>Your AI Assistant</small>
+                </div>
+            </div>
 
-          <button id="renameChatButton" class="rename-chat-btn">
-    ✏️ Rename
-</button>     
- <button id="historyButton" class="history-btn">
-                    📜 History
-                </button>
+            <button
+                id="closeMenu"
+                class="close-menu"
+                type="button"
+            >
+                ✕
+            </button>
+        </div>
 
-                <button id="clearChat" class="clear-btn">
-                    🗑️ Clear Chat
-                </button>
+        <button
+            id="newChatButton"
+            class="new-chat-button"
+            type="button"
+        >
+            ➕ New Chat
+        </button>
 
-                <button id="exportChat" class="export-btn">
-                    📥 Export
-                </button>
+        <nav class="sidebar-nav">
 
+            <button
+                id="historyButton"
+                class="nav-button"
+                type="button"
+            >
+                📜
+                <span>Chat History</span>
+            </button>
+
+            <button
+                id="premiumButton"
+                class="nav-button"
+                type="button"
+            >
+                👑
+                <span>Premium</span>
+            </button>
+
+            <button
+                id="projectsButton"
+                class="nav-button"
+                type="button"
+            >
+                📁
+                <span>Projects</span>
+            </button>
+
+            <button
+                id="settingsButton"
+                class="nav-button"
+                type="button"
+            >
+                ⚙️
+                <span>Settings</span>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-status">
+                <span class="status-dot"></span>
+                AI System Online
             </div>
 
         </div>
 
+    </aside>
 
-        <!-- Chat History Panel -->
-        <div id="historyPanel" class="history-panel">
 
-            <div class="history-header">
+    <!-- ================= MAIN ================= -->
 
-                <h2>📜 Chat History</h2>
+    <main class="main">
 
-                <button id="closeHistory">
-                    ✖️
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button
+                id="menuButton"
+                class="menu-button"
+                type="button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+            <div class="chat-title-area">
+
+                <div
+                    id="chatTitle"
+                    class="chat-title"
+                >
+                    New Chat
+                </div>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <button
+                    id="renameChatButton"
+                    class="topbar-button"
+                    type="button"
+                    title="Rename"
+                >
+                    ✏️
+                </button>
+
+                <button
+                    id="exportChat"
+                    class="topbar-button"
+                    type="button"
+                    title="Export"
+                >
+                    📥
+                </button>
+
+                <button
+                    id="clearChat"
+                    class="topbar-button"
+                    type="button"
+                    title="Clear"
+                >
+                    🗑️
                 </button>
 
             </div>
 
-            <div id="historyList"></div>
+        </header>
+
+
+        <!-- CHAT -->
+
+        <section
+            id="chat"
+            class="chat-area"
+        >
+
+            <div
+                id="welcomeScreen"
+                class="welcome-screen"
+            >
+
+                <div class="welcome-logo">
+                    ✨
+                </div>
+
+                <h1>
+                    AI Chat System
+                </h1>
+
+                <p>
+                    Your personal AI assistant. Ask anything.
+                </p>
+
+
+                <div class="suggestions">
+
+                    <button
+                        class="suggestion-card"
+                        data-message="Explain artificial intelligence in simple words."
+                        type="button"
+                    >
+                        <span>🤖</span>
+
+                        <div>
+                            <strong>AI Explained</strong>
+                            <small>Learn something new</small>
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="suggestion-card"
+                        data-message="Give me some creative project ideas."
+                        type="button"
+                    >
+                        <span>💡</span>
+
+                        <div>
+                            <strong>Project Ideas</strong>
+                            <small>Get creative ideas</small>
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="suggestion-card"
+                        data-message="Teach me Python programming step by step."
+                        type="button"
+                    >
+                        <span>🐍</span>
+
+                        <div>
+                            <strong>Learn Python</strong>
+                            <small>Practice programming</small>
+                        </div>
+                    </button>
+
+
+                    <button
+                        class="suggestion-card"
+                        data-message="Give me a useful productivity tip."
+                        type="button"
+                    >
+                        <span>🚀</span>
+
+                        <div>
+                            <strong>Productivity</strong>
+                            <small>Improve your day</small>
+                        </div>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMPOSER -->
+
+        <footer class="composer-area">
+
+            <div class="composer">
+
+                <button
+                    id="attachButton"
+                    class="composer-button"
+                    type="button"
+                    title="Attach"
+                >
+                    📎
+                </button>
+
+                <input type="file" id="fileInput" accept=".txt,.md,.csv,.json,.html,.css,.js,.py,.pdf" hidden>
+
+                <button
+                    id="voiceButton"
+                    class="composer-button"
+                    type="button"
+                    title="Voice"
+                >
+                    🎤
+                </button>
+
+                <input
+                    id="message"
+                    type="text"
+                    placeholder="Ask anything..."
+                    autocomplete="off"
+                    enterkeyhint="send"
+                >
+
+                <button
+                    id="sendButton"
+                    class="send-button"
+                    type="button"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+            <div class="composer-note">
+                AI can make mistakes. Check important information.
+            </div>
+
+        </footer>
+
+    </main>
+
+
+    <!-- ================= HISTORY ================= -->
+
+    <div
+        id="historyPanel"
+        class="overlay-panel"
+    >
+
+        <div class="panel-header">
+
+            <h2>📜 Chat History</h2>
+
+            <button
+                id="closeHistory"
+                type="button"
+            >
+                ✕
+            </button>
 
         </div>
 
-
-        <!-- Chat Area -->
-        <div id="chat"></div>
-
-
-        <!-- Input Area -->
-        <div class="input-area">
+        <div class="history-tools">
 
             <input
-                type="text"
-                id="message"
-                placeholder="Type your message..."
+                id="chatSearch"
+                type="search"
+                placeholder="🔍 Search chats..."
                 autocomplete="off"
             >
 
             <button
-                id="sendButton"
-                onclick="sendMessage()"
+                id="deleteAllChats"
+                type="button"
             >
-                Send
+                🗑️ Delete All
+            </button>
+
+        </div>
+
+        <div id="historyList"></div>
+
+    </div>
+
+
+    <!-- ================= PREMIUM ================= -->
+
+    <div
+        id="premiumPanel"
+        class="feature-modal"
+        hidden
+    >
+
+        <button
+            id="closePremium"
+            class="modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="modal-icon">👑</div>
+
+        <h2>AI Chat Premium</h2>
+
+        <p>
+            Unlock the next generation of AI features.
+        </p>
+
+        <div class="premium-grid">
+
+            <div>🚀 Advanced AI</div>
+            <div>🧠 Extended Memory</div>
+            <div>📎 File Analysis</div>
+            <div>🖼️ Image Understanding</div>
+            <div>🎤 Voice Chat</div>
+            <div>🌐 Web Search</div>
+            <div>📁 Projects</div>
+            <div>🎨 Premium Themes</div>
+
+        </div>
+
+        <button
+            id="explorePremium"
+            class="primary-modal-button"
+            type="button"
+        >
+            ✨ Explore Premium
+        </button>
+
+    </div>
+
+
+    <!-- ================= PROJECTS ================= -->
+
+    <div
+        id="projectsPanel"
+        class="feature-modal"
+        hidden
+    >
+
+        <button
+            id="closeProjects"
+            class="modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="modal-icon">📁</div>
+
+        <h2>Projects</h2>
+
+        <p>
+            Organize your chats and future AI tools into dedicated projects.
+        </p>
+
+        <button
+            id="createProject"
+            class="primary-modal-button"
+            type="button"
+        >
+            + Create Project
+        </button>
+
+    </div>
+
+
+    <!-- ================= SETTINGS ================= -->
+
+    <div
+        id="settingsPanel"
+        class="feature-modal"
+        hidden
+    >
+
+        <button
+            id="closeSettings"
+            class="modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="modal-icon">⚙️</div>
+
+        <h2>Settings</h2>
+
+        <p>
+            Customize your AI Chat System.
+        </p>
+
+        <div class="settings-options">
+
+            <button
+                id="themeSetting"
+                type="button"
+            >
+                🎨 Theme
+            </button>
+
+            <button
+                id="languageSetting"
+                type="button"
+            >
+                🌐 Language
+            </button>
+
+            <button
+                id="voiceSetting"
+                type="button"
+            >
+                🎤 Voice
             </button>
 
         </div>
@@ -89,8 +485,18 @@
     </div>
 
 
-    <script src="script.js"></script>
+    <!-- ================= OVERLAY ================= -->
+
+    <div
+        id="screenOverlay"
+        class="screen-overlay"
+        hidden
+    ></div>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
-
 </html>

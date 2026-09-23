@@ -5,6 +5,350 @@
 
 let currentDocumentId = null;
 
+let savedDocuments =
+    JSON.parse(localStorage.getItem("savedDocuments")) || [];
+
+function saveDocuments() {
+    localStorage.setItem(
+        "savedDocuments",
+        JSON.stringify(savedDocuments)
+    );
+}
+
+function renderDocuments() {
+
+    const list =
+        $("documentsList");
+
+    const empty =
+        $("documentsEmpty");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (
+        savedDocuments.length === 0
+    ) {
+        if (empty) {
+            empty.hidden = false;
+            empty.textContent =
+                "📄 No documents yet.";
+        }
+        return;
+    }
+
+    if (empty) {
+        empty.hidden = true;
+    }
+
+    savedDocuments.forEach(
+        function(savedDocument) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "document-item";
+
+            item.innerHTML = `
+                <div class="document-info">
+                    <strong>📄 ${savedDocument.name}</strong>
+                    <small>
+                        📅 ${new Date(
+                            savedDocument.uploadedAt
+                        ).toLocaleString()}
+                    </small>
+                </div>
+
+                <div class="document-actions">
+                    <button
+                        type="button"
+                        class="document-open"
+                        data-document-id="${savedDocument.id}"
+                    >
+                        📂 Open
+                    </button>
+
+                    <button
+                        type="button"
+                        class="document-delete"
+                        data-document-id="${savedDocument.id}"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                    <button
+                        type="button"
+                        class="document-attach"
+                        data-document-id="${savedDocument.id}"
+                    >
+                        🔄 Attach
+                    </button>
+                </div>
+            `;
+
+            list.appendChild(item);
+        }
+    );
+}
+
+
+function openDocument(documentId) {
+
+    const savedDocument =
+        savedDocuments.find(
+            function(savedDocument) {
+                return savedDocument.id === documentId;
+            }
+        );
+
+    if (!savedDocument) {
+        alert("❌ Document नहीं मिला।");
+        return;
+    }
+
+    const content =
+        savedDocument.content || "";
+
+    if (!content) {
+        alert("📄 इस document का content उपलब्ध नहीं है।");
+        return;
+    }
+
+    const title =
+        $("documentPreviewTitle");
+
+    const date =
+        $("documentPreviewDate");
+
+    const preview =
+        $("documentPreviewContent");
+
+    const panel =
+        $("documentPreviewPanel");
+
+    const overlay =
+        $("screenOverlay");
+
+    if (!title || !date || !preview || !panel) {
+        alert("❌ Document Preview Panel नहीं मिला।");
+        return;
+    }
+
+    title.textContent =
+        "📄 " + savedDocument.name;
+
+    date.textContent =
+        "📅 Uploaded: " +
+        new Date(
+            savedDocument.uploadedAt
+        ).toLocaleString();
+
+    preview.textContent =
+        content.slice(0, 50000);
+
+    panel.hidden = false;
+    panel.classList.add("open");
+
+    if (overlay) {
+        overlay.hidden = false;
+    }
+
+    closeMenu();
+}
+
+function attachDocument(documentId) {
+
+    const savedDocument =
+        savedDocuments.find(
+            function(savedDocument) {
+                return savedDocument.id === documentId;
+            }
+        );
+
+    if (!savedDocument) {
+        alert("❌ Document नहीं मिला।");
+        return;
+    }
+
+    if (!currentChatId) {
+        alert("❌ पहले कोई chat select करें।");
+        return;
+    }
+
+    const currentChat =
+        getCurrentChat();
+
+    if (!currentChat) {
+        alert("❌ Current chat नहीं मिली।");
+        return;
+    }
+
+    currentChat.documentId =
+        savedDocument.id;
+
+    currentDocumentId =
+        savedDocument.id;
+
+    savedDocument.chatId =
+        currentChat.id;
+
+    saveSessions();
+    saveDocuments();
+
+    closeFeaturePanel("documentsPanel");
+    closeMenu();
+
+    alert(
+        "✅ Document attach हो गया!\n\n" +
+        "📄 " +
+        savedDocument.name +
+        "\n" +
+        "💬 Current chat से connected."
+    );
+}
+
+
+function deleteDocument(documentId) {
+
+    const documentIndex =
+        savedDocuments.findIndex(
+            function(savedDocument) {
+                return savedDocument.id === documentId;
+            }
+        );
+
+    if (documentIndex === -1) {
+        alert("❌ Document नहीं मिला।");
+        return;
+    }
+
+    const savedDocument =
+        savedDocuments[documentIndex];
+
+    const confirmed =
+        confirm(
+            "🗑️ क्या आप \"" +
+            savedDocument.name +
+            "\" delete करना चाहते हैं?"
+        );
+
+    if (!confirmed) return;
+
+    savedDocuments.splice(
+        documentIndex,
+        1
+    );
+
+    saveDocuments();
+
+    renderDocuments();
+
+    alert("✅ Document delete हो गया।");
+}
+
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const deleteButton =
+            event.target.closest(
+                ".document-delete"
+            );
+
+        if (!deleteButton) return;
+
+        const documentId =
+            deleteButton.dataset.documentId;
+
+        deleteDocument(documentId);
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const openButton =
+            event.target.closest(
+                ".document-open"
+            );
+
+        if (!openButton) return;
+
+        const documentId =
+            openButton.dataset.documentId;
+
+        openDocument(documentId);
+    }
+);
+
+
+function searchDocuments(query) {
+
+    const list =
+        $("documentsList");
+
+    const empty =
+        $("documentsEmpty");
+
+    if (!list) return;
+
+    const search =
+        query.trim().toLowerCase();
+
+    const filtered =
+        savedDocuments.filter(
+            function(savedDocument) {
+                return savedDocument.name
+                    .toLowerCase()
+                    .includes(search);
+            }
+        );
+
+    list.innerHTML = "";
+
+    if (filtered.length === 0) {
+        if (empty) {
+            empty.hidden = false;
+            empty.textContent =
+                "🔍 कोई document नहीं मिला।";
+        }
+        return;
+    }
+
+    if (empty) {
+        empty.hidden = true;
+    }
+
+    filtered.forEach(
+        function(savedDocument) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "document-item";
+
+            item.innerHTML = `
+                <div class="document-info">
+                    <strong>📄 ${savedDocument.name}</strong>
+                    <small>
+                        ${new Date(
+                            savedDocument.uploadedAt
+                        ).toLocaleString()}
+                    </small>
+                </div>
+            `;
+
+            list.appendChild(item);
+        }
+    );
+}
+
 async function uploadDocument(content) {
     const documentId = "doc-" + Date.now();
     const response = await fetch(BACKEND_URL + "/document", {
@@ -804,10 +1148,22 @@ function closeFeaturePanel(id) {
     const panel =
         $(id);
 
+    const overlay =
+        $("screenOverlay");
+
     if (!panel) return;
+
+    panel.classList.remove(
+        "open"
+    );
 
     panel.hidden =
         true;
+
+    if (overlay) {
+        overlay.hidden =
+            true;
+    }
 }
 
 
@@ -1558,7 +1914,28 @@ async function handleFileSelected(event) {
                 return;
             }
 
-            await uploadDocument(content);
+            const documentId =
+                await uploadDocument(content);
+
+            const currentChat =
+                getCurrentChat();
+
+            savedDocuments.push({
+                id: documentId,
+                name: file.name,
+                uploadedAt:
+                    new Date().toISOString(),
+                chatId:
+                    currentChat
+                        ? currentChat.id
+                        : null,
+                content:
+                    content.slice(0, 50000)
+            });
+
+            saveDocuments();
+
+            renderDocuments();
 
             const input = $("message");
 
@@ -1892,6 +2269,109 @@ function setupEvents() {
     }
 
 
+    /* Documents */
+
+    if ($("documentsButton")) {
+
+        $("documentsButton")
+            .addEventListener(
+                "click",
+                function() {
+
+                    renderDocuments();
+
+                    openFeaturePanel(
+                        "documentsPanel"
+                    );
+
+                    const documentsPanel =
+                        $("documentsPanel");
+
+                    if (documentsPanel) {
+                        documentsPanel.classList.add(
+                            "open"
+                        );
+                    }
+                }
+            );
+    }
+
+
+    if ($("closeDocuments")) {
+
+        $("closeDocuments")
+            .addEventListener(
+                "click",
+                function() {
+
+                    closeFeaturePanel(
+                        "documentsPanel"
+                    );
+
+                    closeMenu();
+                }
+            );
+    }
+
+
+    if ($("documentSearch")) {
+
+        $("documentSearch")
+            .addEventListener(
+                "input",
+                function(event) {
+                    searchDocuments(
+                        event.target.value
+                    );
+                }
+            );
+    }
+
+
+    if ($("clearDocuments")) {
+
+        $("clearDocuments")
+            .addEventListener(
+                "click",
+                function() {
+
+                    if (
+                        savedDocuments.length === 0
+                    ) {
+                        alert(
+                            "📄 कोई document मौजूद नहीं है।"
+                        );
+                        return;
+                    }
+
+                    const confirmed =
+                        confirm(
+                            "⚠️ क्या आप सभी saved documents हटाना चाहते हैं?"
+                        );
+
+                    if (!confirmed) return;
+
+                    savedDocuments = [];
+
+                    saveDocuments();
+
+                    renderDocuments();
+
+                    const search =
+                        $("documentSearch");
+
+                    if (search) {
+                        search.value = "";
+                    }
+
+                    alert(
+                        "✅ सभी documents हटाए गए।"
+                    );
+                }
+            );
+    }
+
+
     /* Premium */
 
     if ($("premiumButton")) {
@@ -2175,5 +2655,36 @@ window.addEventListener(
         renderChat();
 
         updateChatTitle();
+    }
+);
+
+/* ================= DOCUMENT PREVIEW CLOSE ================= */
+
+if ($("closeDocumentPreview")) {
+    $("closeDocumentPreview").addEventListener(
+        "click",
+        function() {
+            closeFeaturePanel("documentPreviewPanel");
+        }
+    );
+}
+
+/* ================= DOCUMENT ATTACH ================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const attachButton =
+            event.target.closest(
+                ".document-attach"
+            );
+
+        if (!attachButton) return;
+
+        const documentId =
+            attachButton.dataset.documentId;
+
+        attachDocument(documentId);
     }
 );

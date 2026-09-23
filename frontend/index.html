@@ -12,7 +12,7 @@
 
     <title>AI Chat System 🤖</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 
@@ -60,6 +60,15 @@
             >
                 📜
                 <span>Chat History</span>
+            </button>
+
+            <button
+                id="documentsButton"
+                class="nav-button"
+                type="button"
+            >
+                📚
+                <span>My Documents</span>
             </button>
 
             <button
@@ -346,6 +355,90 @@
         </div>
 
         <div id="historyList"></div>
+
+    </div>
+
+
+    <!-- ================= MY DOCUMENTS ================= -->
+
+    <div
+        id="documentsPanel"
+        class="overlay-panel"
+        hidden
+    >
+
+        <div class="panel-header">
+
+            <h2>📚 My Documents</h2>
+
+            <button
+                id="closeDocuments"
+                type="button"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div class="documents-tools">
+
+            <input
+                id="documentSearch"
+                type="search"
+                placeholder="🔍 Search documents..."
+                autocomplete="off"
+            >
+
+            <button
+                id="clearDocuments"
+                type="button"
+            >
+                🗑️ Clear All
+            </button>
+
+        </div>
+
+        <div id="documentsList"></div>
+
+        <div
+            id="documentsEmpty"
+            class="empty-state"
+        >
+            📄 No documents yet.
+        </div>
+
+    </div>
+
+
+    <!-- ================= DOCUMENT PREVIEW ================= -->
+
+    <div
+        id="documentPreviewPanel"
+        class="overlay-panel document-preview-panel"
+        hidden
+    >
+
+        <div class="panel-header">
+
+            <h2 id="documentPreviewTitle">📄 Document Preview</h2>
+
+            <button
+                id="closeDocumentPreview"
+                type="button"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div class="document-preview-meta">
+            <span id="documentPreviewDate"></span>
+        </div>
+
+        <div
+            id="documentPreviewContent"
+            class="document-preview-content"
+        ></div>
 
     </div>
 

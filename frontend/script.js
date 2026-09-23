@@ -1332,7 +1332,8 @@ function showHistory() {
 
 function createHistoryItem(
     session,
-    list
+    list,
+    searchQuery
 ) {
 
     const item =
@@ -1369,9 +1370,18 @@ function createHistoryItem(
     preview.className =
         "history-item-preview";
 
+    const searchPreview =
+        getChatSearchPreview(
+            session,
+            searchQuery || ""
+        );
+
     preview.textContent =
-        session.messages.length +
-        " messages";
+        searchPreview ||
+        (
+            session.messages.length +
+            " messages"
+        );
 
 
     const pinButton =
@@ -1476,6 +1486,57 @@ function createHistoryItem(
    SEARCH HISTORY
 ========================================================= */
 
+function getChatSearchPreview(chat, query) {
+
+    if (!query) {
+        return "";
+    }
+
+    const message =
+        chat.messages.find(
+            function(item) {
+                return String(
+                    item.content || ""
+                )
+                    .toLowerCase()
+                    .includes(query);
+            }
+        );
+
+    if (!message) {
+        return "";
+    }
+
+    const content =
+        String(message.content || "").trim();
+
+    const index =
+        content.toLowerCase().indexOf(query);
+
+    const start =
+        Math.max(0, index - 45);
+
+    const end =
+        Math.min(
+            content.length,
+            index + query.length + 75
+        );
+
+    let preview =
+        content.slice(start, end);
+
+    if (start > 0) {
+        preview = "..." + preview;
+    }
+
+    if (end < content.length) {
+        preview += "...";
+    }
+
+    return "🔎 " + preview;
+}
+
+
 function searchChats(searchText) {
 
     const list =
@@ -1553,7 +1614,8 @@ function searchChats(searchText) {
 
                 createHistoryItem(
                     session,
-                    list
+                    list,
+                    query
                 );
             }
         );

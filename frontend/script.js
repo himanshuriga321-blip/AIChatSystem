@@ -3078,6 +3078,69 @@ function setupEvents() {
             new Date(
                 project.createdAt
             ).toLocaleDateString();
+
+        const lastActivityElement =
+            $("projectLastActivity");
+
+        const lastChatElement =
+            $("projectLastChat");
+
+        const activityStatusElement =
+            $("projectActivityStatus");
+
+        if (
+            lastActivityElement &&
+            lastChatElement &&
+            activityStatusElement
+        ) {
+
+            if (projectChats.length === 0) {
+
+                lastActivityElement.textContent =
+                    "-";
+
+                lastChatElement.textContent =
+                    "-";
+
+                activityStatusElement.textContent =
+                    "No Activity";
+
+            } else {
+
+                const sortedChats =
+                    projectChats
+                        .slice()
+                        .sort(
+                            function(a, b) {
+                                return (
+                                    new Date(
+                                        b.createdAt || 0
+                                    ) -
+                                    new Date(
+                                        a.createdAt || 0
+                                    )
+                                );
+                            }
+                        );
+
+                const lastChat =
+                    sortedChats[0];
+
+                lastActivityElement.textContent =
+                    lastChat.createdAt
+                        ? new Date(
+                            lastChat.createdAt
+                        ).toLocaleString()
+                        : "-";
+
+                lastChatElement.textContent =
+                    lastChat.title ||
+                    "New Chat";
+
+                activityStatusElement.textContent =
+                    "Active";
+            }
+        }
     }
 
 

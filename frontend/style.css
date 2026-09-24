@@ -1800,3 +1800,38 @@ body.dark-theme .premium-grid div {
     }
 }
 
+
+/* ================= PROJECT ACTIVITY ================= */
+
+.project-dashboard-activity {
+    margin-top: 18px;
+    padding: 6px 0;
+}
+
+.project-activity-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e5ee;
+}
+
+.project-activity-row:last-child {
+    border-bottom: none;
+}
+
+.project-activity-row span {
+    color: #666;
+    font-size: 14px;
+}
+
+.project-activity-row strong {
+    max-width: 60%;
+    text-align: right;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

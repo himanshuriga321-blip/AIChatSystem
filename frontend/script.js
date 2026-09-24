@@ -1873,6 +1873,122 @@ function exportCurrentChatJSON() {
     );
 }
 
+function importChatJSON(event) {
+
+    const file =
+        event.target.files &&
+        event.target.files[0];
+
+    if (!file) return;
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        function(e) {
+
+            try {
+
+                const imported =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+                if (
+                    !imported ||
+                    !Array.isArray(
+                        imported.messages
+                    )
+                ) {
+
+                    throw new Error(
+                        "Invalid chat JSON structure."
+                    );
+                }
+
+                const importedChat = {
+
+                    id:
+                        Date.now().toString(),
+
+                    title:
+                        String(
+                            imported.title ||
+                            "Imported Chat"
+                        ),
+
+                    messages:
+                        imported.messages.map(
+                            function(message) {
+
+                                return {
+
+                                    role:
+                                        message.role ===
+                                        "assistant"
+                                            ? "assistant"
+                                            : "user",
+
+                                    content:
+                                        String(
+                                            message.content ||
+                                            ""
+                                        )
+                                };
+                            }
+                        ),
+
+                    documentId:
+                        imported.documentId ||
+                        null,
+
+                    createdAt:
+                        new Date().toISOString(),
+
+                    pinned:
+                        Boolean(
+                            imported.pinned
+                        )
+                };
+
+                chatSessions.push(
+                    importedChat
+                );
+
+                currentChatId =
+                    importedChat.id;
+
+                currentDocumentId =
+                    importedChat.documentId;
+
+                saveSessions();
+
+                showHistory();
+
+                renderChat();
+
+                alert(
+                    "✅ Chat imported successfully!"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "JSON import error:",
+                    error
+                );
+
+                alert(
+                    "❌ Invalid or corrupted JSON chat file."
+                );
+            }
+
+            event.target.value = "";
+        };
+
+    reader.readAsText(file);
+}
+
 function exportCurrentChat() {
 
     const currentChat =
@@ -2398,6 +2514,30 @@ function setupEvents() {
             .addEventListener(
                 "click",
                 exportCurrentChat
+            );
+    }
+
+
+    /* Import JSON */
+
+    if ($("importChatJSON")) {
+
+        $("importChatJSON")
+            .addEventListener(
+                "click",
+                function() {
+
+                    $("importChatJSONInput").click();
+                }
+            );
+    }
+
+    if ($("importChatJSONInput")) {
+
+        $("importChatJSONInput")
+            .addEventListener(
+                "change",
+                importChatJSON
             );
     }
 

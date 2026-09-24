@@ -1794,6 +1794,85 @@ function renameCurrentChat() {
    EXPORT CHAT
 ========================================================= */
 
+
+function exportCurrentChatJSON() {
+
+    const currentChat =
+        getCurrentChat();
+
+    if (
+        !currentChat ||
+        currentChat.messages.length === 0
+    ) {
+
+        alert(
+            "📭 No chat history to export."
+        );
+
+        return;
+    }
+
+    const jsonData =
+        JSON.stringify(
+            currentChat,
+            null,
+            2
+        );
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF" +
+                jsonData
+            ],
+            {
+                type:
+                    "application/json;charset=utf-8"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+    link.href =
+        url;
+
+    link.download =
+        "AI-Chat-" +
+        currentChat.title
+            .replace(
+                /[^a-z0-9]/gi,
+                "-"
+            ) +
+        ".json";
+
+    document.body.appendChild(
+        link
+    );
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(
+        function() {
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        },
+        1000
+    );
+}
+
 function exportCurrentChat() {
 
     const currentChat =
@@ -2303,6 +2382,15 @@ function setupEvents() {
 
 
     /* Export */
+
+    if ($("exportChatJSON")) {
+
+        $("exportChatJSON")
+            .addEventListener(
+                "click",
+                exportCurrentChatJSON
+            );
+    }
 
     if ($("exportChat")) {
 

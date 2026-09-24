@@ -4,6 +4,7 @@
 ========================================================= */
 
 let currentDocumentId = null;
+let currentProjectId = localStorage.getItem("currentProjectId") || null;
 
 let savedDocuments =
     JSON.parse(localStorage.getItem("savedDocuments")) || [];
@@ -560,6 +561,8 @@ function createNewChat(showMessage = true) {
         messages: [],
 
         documentId: null,
+
+        projectId: currentProjectId,
 
         createdAt:
             new Date().toISOString(),
@@ -1288,6 +1291,18 @@ function showHistory() {
 
     const sessions =
         chatSessions
+            .filter(
+                function(session) {
+                    if (!currentProjectId) {
+                        return true;
+                    }
+
+                    return (
+                        session.projectId ===
+                        currentProjectId
+                    );
+                }
+            )
             .slice()
             .sort(
                 function(a, b) {
@@ -2871,6 +2886,161 @@ function setupEvents() {
 
     /* Projects */
 
+    if ($("allChatsFromProject")) {
+        $("allChatsFromProject")
+            .addEventListener(
+                "click",
+                function() {
+
+                    selectProject(null);
+
+                    showHistory();
+
+                    alert(
+                        "💬 Showing all chats."
+                    );
+                }
+            );
+    }
+
+    let projects =
+        JSON.parse(
+            localStorage.getItem("aiChatProjects")
+        ) || [];
+
+    function saveProjects() {
+
+        localStorage.setItem(
+            "aiChatProjects",
+            JSON.stringify(projects)
+        );
+    }
+
+    function selectProject(projectId) {
+
+        currentProjectId =
+            projectId || null;
+
+        if (currentProjectId) {
+
+            localStorage.setItem(
+                "currentProjectId",
+                currentProjectId
+            );
+
+        } else {
+
+            localStorage.removeItem(
+                "currentProjectId"
+            );
+        }
+    }
+
+    function renderProjects() {
+
+        const list =
+            $("projectsList");
+
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        if (projects.length === 0) {
+
+            list.innerHTML =
+                '<p class="projects-empty">📂 No projects yet.</p>';
+
+            return;
+        }
+
+        projects.forEach(
+            function(project) {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "project-item";
+
+                const name =
+                    document.createElement("span");
+
+                name.textContent =
+                    "📁 " + project.name;
+
+                name.style.cursor =
+                    "pointer";
+
+                name.title =
+                    "Open Project";
+
+                name.addEventListener(
+                    "click",
+                    function() {
+
+                        selectProject(
+                            project.id
+                        );
+
+                        alert(
+                            "📁 Project \"" +
+                            project.name +
+                            "\" selected!"
+                        );
+                    }
+                );
+
+                const deleteButton =
+                    document.createElement("button");
+
+                deleteButton.type =
+                    "button";
+
+                deleteButton.className =
+                    "project-delete";
+
+                deleteButton.textContent =
+                    "🗑️";
+
+                deleteButton.title =
+                    "Delete Project";
+
+                deleteButton.addEventListener(
+                    "click",
+                    function() {
+
+                        const confirmed =
+                            confirm(
+                                '🗑️ Delete project "' +
+                                project.name +
+                                '"?'
+                            );
+
+                        if (!confirmed) return;
+
+                        projects =
+                            projects.filter(
+                                function(item) {
+                                    return item.id !== project.id;
+                                }
+                            );
+
+                        saveProjects();
+
+                        renderProjects();
+                    }
+                );
+
+                item.appendChild(name);
+                item.appendChild(deleteButton);
+
+                list.appendChild(item);
+            }
+        );
+    }
+
+    renderProjects();
+
     if ($("projectsButton")) {
 
         $("projectsButton")
@@ -2915,16 +3085,35 @@ function setupEvents() {
                             "📁 Enter project name:"
                         );
 
-
                     if (
                         name &&
                         name.trim()
                     ) {
 
+                        const project = {
+
+                            id:
+                                Date.now().toString(),
+
+                            name:
+                                name.trim(),
+
+                            createdAt:
+                                new Date().toISOString()
+                        };
+
+                        projects.push(
+                            project
+                        );
+
+                        saveProjects();
+
+                        renderProjects();
+
                         alert(
-                            "📁 Project \"" +
-                            name.trim() +
-                            "\" created!"
+                            "✅ Project \"" +
+                            project.name +
+                            "\" created successfully!"
                         );
                     }
                 }

@@ -1853,6 +1853,15 @@ body.dark-theme .premium-grid div {
     font-size: 12px;
 }
 
+.timeline-preview {
+    display: block;
+    margin-top: 6px;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
 
 .project-dashboard-activity {
     margin-top: 18px;

@@ -3237,8 +3237,25 @@ function setupEvents() {
                                         : "-"
                                 );
 
+                            const preview =
+                                document.createElement("span");
+
+                            const previewText =
+                                String(
+                                    activity.content || ""
+                                ).replace(/\\s+/g, " ").trim();
+
+                            preview.className =
+                                "timeline-preview";
+
+                            preview.textContent =
+                                previewText.length > 80
+                                    ? previewText.slice(0, 80) + "..."
+                                    : previewText || "No message content.";
+
                             item.appendChild(title);
                             item.appendChild(details);
+                            item.appendChild(preview);
 
                             timelineElement.appendChild(item);
 

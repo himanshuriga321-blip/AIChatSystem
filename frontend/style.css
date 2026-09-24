@@ -1803,6 +1803,57 @@ body.dark-theme .premium-grid div {
 
 /* ================= PROJECT ACTIVITY ================= */
 
+/* ================= ACTIVITY TIMELINE ================= */
+
+.project-activity-timeline {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #e5e5ee;
+    border-radius: 16px;
+    background: #f8f8fc;
+}
+
+.project-activity-timeline h3 {
+    margin: 0 0 14px;
+    font-size: 17px;
+}
+
+#projectActivityTimeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.timeline-empty {
+    margin: 0;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e5ee;
+}
+
+.timeline-item strong {
+    display: block;
+    font-size: 14px;
+}
+
+.timeline-item span {
+    display: block;
+    margin-top: 3px;
+    color: #777;
+    font-size: 12px;
+}
+
+
 .project-dashboard-activity {
     margin-top: 18px;
     padding: 6px 0;

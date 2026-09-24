@@ -3141,6 +3141,113 @@ function setupEvents() {
                     "Active";
             }
         }
+
+        const timelineElement =
+            $("projectActivityTimeline");
+
+        if (timelineElement) {
+
+            timelineElement.innerHTML = "";
+
+            if (projectChats.length === 0) {
+
+                const empty =
+                    document.createElement("p");
+
+                empty.className =
+                    "timeline-empty";
+
+                empty.textContent =
+                    "No recent activity.";
+
+                timelineElement.appendChild(empty);
+
+            } else {
+
+                const activities = [];
+
+                projectChats.forEach(
+                    function(chat) {
+
+                        if (!Array.isArray(chat.messages)) {
+                            return;
+                        }
+
+                        chat.messages.forEach(
+                            function(message) {
+
+                                activities.push({
+                                    role:
+                                        message.role,
+                                    content:
+                                        message.content,
+                                    chatTitle:
+                                        chat.title ||
+                                        "New Chat",
+                                    time:
+                                        chat.createdAt ||
+                                        null
+                                });
+
+                            }
+                        );
+
+                    }
+                );
+
+                activities
+                    .slice(-10)
+                    .reverse()
+                    .forEach(
+                        function(activity) {
+
+                            const item =
+                                document.createElement("div");
+
+                            item.className =
+                                "timeline-item";
+
+                            const icon =
+                                activity.role === "assistant"
+                                    ? "🤖"
+                                    : "💬";
+
+                            const title =
+                                document.createElement("strong");
+
+                            title.textContent =
+                                icon + " " +
+                                (
+                                    activity.role === "assistant"
+                                        ? "AI Reply"
+                                        : "Message Sent"
+                                );
+
+                            const details =
+                                document.createElement("span");
+
+                            details.textContent =
+                                activity.chatTitle +
+                                " • " +
+                                (
+                                    activity.time
+                                        ? new Date(
+                                            activity.time
+                                        ).toLocaleString()
+                                        : "-"
+                                );
+
+                            item.appendChild(title);
+                            item.appendChild(details);
+
+                            timelineElement.appendChild(item);
+
+                        }
+                    );
+
+            }
+
+        }
     }
 
 

@@ -559,10 +559,64 @@
             💬 All Chats
         </button>
 
+        <button
+            id="openProjectDashboard"
+            class="primary-modal-button"
+            type="button"
+        >
+            📊 Project Dashboard
+        </button>
+
         <div
             id="projectsList"
             class="projects-list"
         >
+        </div>
+
+    </div>
+
+
+    <!-- ================= PROJECT DASHBOARD ================= -->
+
+    <div
+        id="projectDashboardPanel"
+        class="feature-modal"
+        hidden
+    >
+
+        <button
+            id="closeProjectDashboard"
+            class="modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div class="modal-icon">📊</div>
+
+        <h2>Project Dashboard</h2>
+
+        <p id="projectDashboardName">
+            No project selected.
+        </p>
+
+        <div class="project-dashboard-stats">
+
+            <div class="project-stat-card">
+                <strong id="projectChatCount">0</strong>
+                <span>💬 Chats</span>
+            </div>
+
+            <div class="project-stat-card">
+                <strong id="projectMessageCount">0</strong>
+                <span>📝 Messages</span>
+            </div>
+
+            <div class="project-stat-card">
+                <strong id="projectCreatedDate">-</strong>
+                <span>📅 Created</span>
+            </div>
+
         </div>
 
     </div>

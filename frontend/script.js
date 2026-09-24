@@ -2903,6 +2903,49 @@ function setupEvents() {
             );
     }
 
+    if ($("closeProjectDashboard")) {
+        $("closeProjectDashboard")
+            .addEventListener(
+                "click",
+                function() {
+
+                    const panel =
+                        $("projectDashboardPanel");
+
+                    if (panel) {
+                        panel.hidden = true;
+                    }
+                }
+            );
+    }
+
+
+    if ($("openProjectDashboard")) {
+        $("openProjectDashboard")
+            .addEventListener(
+                "click",
+                function() {
+
+                    if (!currentProjectId) {
+                        alert(
+                            "📁 Please select a project first."
+                        );
+                        return;
+                    }
+
+                    renderProjectDashboard();
+
+                    const panel =
+                        $("projectDashboardPanel");
+
+                    if (panel) {
+                        panel.hidden = false;
+                    }
+                }
+            );
+    }
+
+
     let projects =
         JSON.parse(
             localStorage.getItem("aiChatProjects")
@@ -2935,6 +2978,108 @@ function setupEvents() {
             );
         }
     }
+
+    function renderProjectDashboard() {
+
+        const nameElement =
+            $("projectDashboardName");
+
+        const chatCountElement =
+            $("projectChatCount");
+
+        const messageCountElement =
+            $("projectMessageCount");
+
+        const createdDateElement =
+            $("projectCreatedDate");
+
+        if (!nameElement ||
+            !chatCountElement ||
+            !messageCountElement ||
+            !createdDateElement) {
+            return;
+        }
+
+        if (!currentProjectId) {
+
+            nameElement.textContent =
+                "No project selected.";
+
+            chatCountElement.textContent =
+                "0";
+
+            messageCountElement.textContent =
+                "0";
+
+            createdDateElement.textContent =
+                "-";
+
+            return;
+        }
+
+        const project =
+            projects.find(
+                function(item) {
+                    return (
+                        item.id ===
+                        currentProjectId
+                    );
+                }
+            );
+
+        if (!project) {
+
+            nameElement.textContent =
+                "Project not found.";
+
+            chatCountElement.textContent =
+                "0";
+
+            messageCountElement.textContent =
+                "0";
+
+            createdDateElement.textContent =
+                "-";
+
+            return;
+        }
+
+        const projectChats =
+            chatSessions.filter(
+                function(chat) {
+                    return (
+                        chat.projectId ===
+                        currentProjectId
+                    );
+                }
+            );
+
+        let totalMessages = 0;
+
+        projectChats.forEach(
+            function(chat) {
+                totalMessages +=
+                    Array.isArray(chat.messages)
+                        ? chat.messages.length
+                        : 0;
+            }
+        );
+
+        nameElement.textContent =
+            "📁 " + project.name;
+
+        chatCountElement.textContent =
+            String(projectChats.length);
+
+        messageCountElement.textContent =
+            String(totalMessages);
+
+        createdDateElement.textContent =
+            new Date(
+                project.createdAt
+            ).toLocaleDateString();
+    }
+
 
     function renderProjects() {
 

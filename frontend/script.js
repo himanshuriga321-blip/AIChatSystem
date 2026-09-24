@@ -2139,6 +2139,121 @@ function exportCurrentChat() {
 
 
 /* =========================================================
+   SHARE CHAT
+========================================================= */
+
+async function shareCurrentChat() {
+
+    const currentChat =
+        getCurrentChat();
+
+    if (
+        !currentChat ||
+        currentChat.messages.length === 0
+    ) {
+
+        alert(
+            "📭 No chat history to share."
+        );
+
+        return;
+    }
+
+    let text =
+        "🤖 AI Chat System\n\n";
+
+    text +=
+        "💬 Chat: " +
+        currentChat.title +
+        "\n\n";
+
+    currentChat.messages.forEach(
+        function(item) {
+
+            if (
+                item.role === "user"
+            ) {
+
+                text +=
+                    "👤 You: " +
+                    item.content +
+                    "\n\n";
+            }
+
+            if (
+                item.role === "assistant"
+            ) {
+
+                text +=
+                    "🤖 AI: " +
+                    item.content +
+                    "\n\n";
+            }
+        }
+    );
+
+    if (
+        navigator.share
+    ) {
+
+        try {
+
+            await navigator.share({
+
+                title:
+                    currentChat.title,
+
+                text:
+                    text
+
+            });
+
+        } catch (error) {
+
+            if (
+                error.name !==
+                "AbortError"
+            ) {
+
+                console.error(
+                    "Share error:",
+                    error
+                );
+
+                alert(
+                    "❌ Unable to share chat."
+                );
+            }
+        }
+
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        alert(
+            "✅ Chat copied to clipboard!"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Clipboard error:",
+            error
+        );
+
+        alert(
+            "❌ Unable to copy chat."
+        );
+    }
+}
+
+
+/* =========================================================
    ATTACHMENT
 ========================================================= */
 
@@ -2514,6 +2629,15 @@ function setupEvents() {
             .addEventListener(
                 "click",
                 exportCurrentChat
+            );
+    }
+
+    if ($("shareChat")) {
+
+        $("shareChat")
+            .addEventListener(
+                "click",
+                shareCurrentChat
             );
     }
 
